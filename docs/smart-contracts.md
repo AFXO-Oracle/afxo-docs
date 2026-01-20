@@ -4,11 +4,11 @@ AFXO oracles are deployed on Avalanche C-Chain as the canonical root (source of 
 
 ## Interface
 
-All AFXO oracles implement the `IAFXOOracle` interface, which is fully compatible with Chainlink's `AggregatorV3Interface` plus AFXO-specific extensions.
+All AFXO oracles implement the `IAFXOOracle` interface, which follows industry-standard oracle conventions plus AFXO-specific extensions.
 
 ```solidity
 interface IAFXOOracle {
-    // AggregatorV3 Compatible
+    // Standard Oracle Interface
     function decimals() external view returns (uint8);
     function description() external view returns (string memory);
     function version() external view returns (uint256);

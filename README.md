@@ -15,7 +15,7 @@ AFXO provides reliable, verifiable FX rates for 27+ currencies that existing ora
 - **Multi-Source Aggregation** — Rates aggregated from 10+ institutional data sources per currency
 - **AI Quality Control** — ML-powered anomaly detection and confidence scoring
 - **On-Chain Delivery** — Avalanche C-Chain as canonical root, expanding to Celo, Base, Arbitrum, Solana
-- **AggregatorV3 Compatible** — Drop-in replacement for Chainlink-compatible protocols
+- **Industry-Standard Interface** — Drop-in compatible with existing DeFi protocols
 - **Decentralized Verification** — Multi-operator consensus before any rate is published
 
 ## Supported Currencies (27 Live on Testnet)

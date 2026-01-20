@@ -3,11 +3,11 @@ pragma solidity ^0.8.19;
 
 /**
  * @title IAFXOOracle
- * @notice AFXO Oracle interface - AggregatorV3 compatible with extensions
- * @dev Compatible with Chainlink's AggregatorV3Interface for easy integration
+ * @notice AFXO Oracle interface - industry-standard compatible with extensions
+ * @dev Compatible with standard DeFi oracle interfaces for easy integration
  */
 interface IAFXOOracle {
-    // ============ AggregatorV3 Interface ============
+    // ============ Standard Oracle Interface ============
 
     /**
      * @notice Returns the number of decimals for the price feed
