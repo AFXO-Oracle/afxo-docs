@@ -29,25 +29,62 @@ See the full interface: [`IAFXOOracle.sol`](../contracts/interfaces/IAFXOOracle.
 
 ## Contract Addresses
 
+### Access Control
+
+All AFXO oracles use subscription-based access control. Calling `latestRoundData()` or other data-reading functions without a valid subscription will revert with `SubscriptionRequired()`.
+
+To get access:
+1. **Testnet**: Contact us for whitelist access for testing
+2. **Mainnet**: Subscribe via [afxo.ai/get-access](https://afxo.ai/get-access)
+
 ### Avalanche C-Chain (Mainnet) — Chain ID: 43114
 
 | Oracle | Address | Status |
 |--------|---------|--------|
-| KES/USD | `Coming Soon` | Pending |
-| NGN/USD | `Coming Soon` | Pending |
-| GHS/USD | `Coming Soon` | Pending |
-| ZAR/USD | `Coming Soon` | Pending |
-| AFXORegistry | `Coming Soon` | Pending |
+| All currencies | `Coming Soon` | Pending |
 
 ### Avalanche Fuji Testnet — Chain ID: 43113
 
-| Oracle | Address | Status |
-|--------|---------|--------|
-| KES/USD | See [afxo.ai/docs/contracts](https://afxo.ai/docs/contracts) | Live |
-| NGN/USD | See [afxo.ai/docs/contracts](https://afxo.ai/docs/contracts) | Live |
-| AFXORegistry | See [afxo.ai/docs/contracts](https://afxo.ai/docs/contracts) | Live |
+All oracles deployed. **Whitelisted access required** — contact us to get testnet access.
 
-> **Note**: Testnet addresses are updated frequently. Check the website for current addresses.
+#### African Currencies
+
+| Oracle | Proxy Address | Status |
+|--------|---------------|--------|
+| KES/USD | `0x62200Cc809D7B80665caCF314c46d3d638c775b1` | Live |
+| NGN/USD | `0xCaf356b38100CE40EDC125513C375E3b42E11D17` | Live |
+| GHS/USD | `0xbE894Aa75Fa1dd6fA6B945B99DB71B18172F1086` | Live |
+| ZAR/USD | `0x6E506531DE2Ad22c34B3b828E5865f8f12b91027` | Live |
+| EGP/USD | `0x5848583f49Cf89Ecdbf5133EC237310f05642CDA` | Live |
+| ETB/USD | `0x8027f2a5DC69Ca1384e71691881ecDC889d71339` | Live |
+| TZS/USD | `0xC127e6B2350385bEb3167357d8eBECAe0f53eB15` | Live |
+| UGX/USD | `0x61E2525165e7f0821Eb66213CeA2499B5DaF22Aa` | Live |
+| CDF/USD | `0x36ee1436885296C510Bca75d70757950eBF1f515` | Live |
+| XOF/USD | `0x1EB65d675a267d5661bDfDCE1bEEc907914d0Be0` | Live |
+| XAF/USD | `0x157Dc97a60F72589A796096E03003181d2c52E08` | Live |
+| MAD/USD | `0xdBd34927bE3f01f4b33d5eE548248FFCdC139d1a` | Live |
+| DZD/USD | `0x0305e08356a59a0F8770741f27E64D47cf457C8e` | Live |
+| TND/USD | `0x5218C22CaD04f80F1885eF4e7fBd154C692d96f9` | Live |
+| AOA/USD | `0xDc17EbA71070C4076136ee01A2e2Fd46Cd2C8B9B` | Live |
+| ZMW/USD | `0x8F55972FE4C5738CF24F5107E88AD1e20Ee2F85F` | Live |
+| RWF/USD | `0x04da49d1fd6B9505edce5EE1f9573CA530E6Df37` | Live |
+| MWK/USD | `0x71ec2FE49A1B1c92FF83Ef7224515E9679791143` | Live |
+| MZN/USD | `0x57DA1755f5b5ACe9CDCafC469E6d5ddB6a389568` | Live |
+| BWP/USD | `0x75081F8Dc3B18EF8CE6b6Cacc8944180955e1083` | Live |
+| SZL/USD | `0xB12343ae368b8fC8CcC8b09d7F59d0C56921dcF8` | Live |
+| LSL/USD | `0x50Ee23F48299Eda8438cFf1DE7E1CDf82a515d3D` | Live |
+
+#### Trade Partner Currencies
+
+| Oracle | Proxy Address | Status |
+|--------|---------------|--------|
+| AED/USD | `0xAb8c78DE20f43049873A104D7252942a80936D7a` | Live |
+| INR/USD | `0x70E43D295163a979c39F7f374F1464bE397E821C` | Live |
+| CNY/USD | `0x39ABE8575BC92329324835e17c7B88FC2f3f2E9D` | Live |
+| EUR/USD | `0x6745a4fb0D19Fa911BEbb7cDC2eb8A12138Cb149` | Live |
+| GBP/USD | `0x0027BC8eEA7Adf7CeA70B7Fc60A935509501b41B` | Live |
+
+> **Note**: All contracts share the same implementation: `0xdBFbFb8323A2170a3feD2f1f4D5c26A91aa58084`
 
 ---
 

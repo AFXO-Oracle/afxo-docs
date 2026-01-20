@@ -18,21 +18,58 @@ AFXO provides reliable, verifiable FX rates for 27+ currencies that existing ora
 - **AggregatorV3 Compatible** — Drop-in replacement for Chainlink-compatible protocols
 - **Decentralized Verification** — Multi-operator consensus before any rate is published
 
-## Supported Currencies
+## Supported Currencies (27 Live on Testnet)
 
-### African Currencies
-| Code | Currency | Code | Currency |
-|------|----------|------|----------|
-| KES | Kenyan Shilling | NGN | Nigerian Naira |
-| GHS | Ghanaian Cedi | ZAR | South African Rand |
-| EGP | Egyptian Pound | ETB | Ethiopian Birr |
-| TZS | Tanzanian Shilling | UGX | Ugandan Shilling |
-| XOF | CFA Franc (BCEAO) | XAF | CFA Franc (BEAC) |
-| MAD | Moroccan Dirham | CDF | Congolese Franc |
-| ... | And more | | |
+### East Africa
+| Code | Currency |
+|------|----------|
+| KES | Kenyan Shilling |
+| ETB | Ethiopian Birr |
+| TZS | Tanzanian Shilling |
+| UGX | Ugandan Shilling |
+| RWF | Rwandan Franc |
 
-### Reference Currencies
-AED, INR, CNY, EUR, GBP
+### West Africa
+| Code | Currency |
+|------|----------|
+| NGN | Nigerian Naira |
+| GHS | Ghanaian Cedi |
+| XOF | CFA Franc (BCEAO) |
+
+### Central Africa
+| Code | Currency |
+|------|----------|
+| CDF | Congolese Franc |
+| XAF | CFA Franc (BEAC) |
+| AOA | Angolan Kwanza |
+
+### Southern Africa
+| Code | Currency |
+|------|----------|
+| ZAR | South African Rand |
+| ZMW | Zambian Kwacha |
+| MWK | Malawian Kwacha |
+| MZN | Mozambican Metical |
+| BWP | Botswana Pula |
+| SZL | Swazi Lilangeni |
+| LSL | Lesotho Loti |
+
+### North Africa
+| Code | Currency |
+|------|----------|
+| EGP | Egyptian Pound |
+| MAD | Moroccan Dirham |
+| DZD | Algerian Dinar |
+| TND | Tunisian Dinar |
+
+### Trade Partner Reference Currencies
+| Code | Currency |
+|------|----------|
+| AED | UAE Dirham |
+| INR | Indian Rupee |
+| CNY | Chinese Yuan |
+| EUR | Euro |
+| GBP | British Pound |
 
 ## Quick Start
 
@@ -116,20 +153,26 @@ client.subscribe('KES/USD', (update) => {
 
 ## Contract Addresses
 
-### Avalanche C-Chain (Mainnet)
+> **Access Control**: All oracles require subscription or whitelist access. Unauthorized calls will revert with `SubscriptionRequired()`.
+
+### Avalanche C-Chain (Mainnet) — Chain ID: 43114
 
 | Oracle | Address |
 |--------|---------|
-| KES/USD | `Coming Soon` |
-| NGN/USD | `Coming Soon` |
-| Registry | `Coming Soon` |
+| All currencies | `Coming Soon` |
 
-### Avalanche Fuji (Testnet)
+### Avalanche Fuji (Testnet) — Chain ID: 43113
 
-| Oracle | Address |
-|--------|---------|
-| KES/USD | See [contracts page](https://afxo.ai/docs/contracts) |
-| NGN/USD | See [contracts page](https://afxo.ai/docs/contracts) |
+All 27 oracles deployed and live. [See full address list →](./docs/smart-contracts.md#avalanche-fuji-testnet--chain-id-43113)
+
+Key addresses:
+| Oracle | Proxy Address |
+|--------|---------------|
+| KES/USD | `0x62200Cc809D7B80665caCF314c46d3d638c775b1` |
+| NGN/USD | `0xCaf356b38100CE40EDC125513C375E3b42E11D17` |
+| GHS/USD | `0xbE894Aa75Fa1dd6fA6B945B99DB71B18172F1086` |
+| ZAR/USD | `0x6E506531DE2Ad22c34B3b828E5865f8f12b91027` |
+| ETB/USD | `0x8027f2a5DC69Ca1384e71691881ecDC889d71339` |
 
 ## Examples
 
