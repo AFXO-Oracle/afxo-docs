@@ -4,11 +4,11 @@
 [![Docs](https://img.shields.io/badge/Docs-Documentation-blue)](https://afxo.ai/docs)
 [![Network](https://img.shields.io/badge/Network-Avalanche-E84142)](https://afxo.ai/network)
 
-**Institutional-grade FX data infrastructure for emerging markets.** Multi-source aggregation, AI quality control, and on-chain delivery for DeFi protocols and financial institutions.
+**The only institutional-grade FX oracle with deep emerging market coverage and economic intelligence.** Multi-source aggregation, AI quality control, and on-chain delivery for DeFi protocols and financial institutions.
 
 ## Overview
 
-AFXO provides reliable, verifiable FX rates for 27+ currencies that existing oracles don't adequately cover — including African, Middle Eastern, and Asian emerging market currencies.
+AFXO provides reliable, verifiable FX rates for **50+ currencies** that existing oracles don't adequately cover — including African, Latin American, and Asian emerging market currencies. Unlike Chainlink and Pyth, AFXO also provides **economic intelligence signals**: volatility regimes, carry trade recommendations, and interest rate data.
 
 ### Key Features
 
@@ -18,9 +18,11 @@ AFXO provides reliable, verifiable FX rates for 27+ currencies that existing ora
 - **Industry-Standard Interface** — Drop-in compatible with existing DeFi protocols
 - **Decentralized Verification** — Multi-operator consensus before any rate is published
 
-## Supported Currencies (27 Live on Testnet)
+## Supported Currencies (50+ Live)
 
-### East Africa
+### African Currencies (20)
+
+#### East Africa
 | Code | Currency |
 |------|----------|
 | KES | Kenyan Shilling |
@@ -28,22 +30,23 @@ AFXO provides reliable, verifiable FX rates for 27+ currencies that existing ora
 | TZS | Tanzanian Shilling |
 | UGX | Ugandan Shilling |
 | RWF | Rwandan Franc |
+| MUR | Mauritian Rupee |
 
-### West Africa
+#### West Africa
 | Code | Currency |
 |------|----------|
 | NGN | Nigerian Naira |
 | GHS | Ghanaian Cedi |
 | XOF | CFA Franc (BCEAO) |
 
-### Central Africa
+#### Central Africa
 | Code | Currency |
 |------|----------|
 | CDF | Congolese Franc |
 | XAF | CFA Franc (BEAC) |
 | AOA | Angolan Kwanza |
 
-### Southern Africa
+#### Southern Africa
 | Code | Currency |
 |------|----------|
 | ZAR | South African Rand |
@@ -54,7 +57,7 @@ AFXO provides reliable, verifiable FX rates for 27+ currencies that existing ora
 | SZL | Swazi Lilangeni |
 | LSL | Lesotho Loti |
 
-### North Africa
+#### North Africa
 | Code | Currency |
 |------|----------|
 | EGP | Egyptian Pound |
@@ -62,14 +65,48 @@ AFXO provides reliable, verifiable FX rates for 27+ currencies that existing ora
 | DZD | Algerian Dinar |
 | TND | Tunisian Dinar |
 
-### Trade Partner Reference Currencies
+### Latin America (6)
+| Code | Currency |
+|------|----------|
+| BRL | Brazilian Real |
+| MXN | Mexican Peso |
+| ARS | Argentine Peso |
+| COP | Colombian Peso |
+| CLP | Chilean Peso |
+| PEN | Peruvian Sol |
+
+### Southeast Asia & East Asia (6)
+| Code | Currency |
+|------|----------|
+| SGD | Singapore Dollar |
+| HKD | Hong Kong Dollar |
+| KRW | South Korean Won |
+| THB | Thai Baht |
+| PHP | Philippine Peso |
+| VND | Vietnamese Dong |
+
+### G10 Currencies (11)
+| Code | Currency |
+|------|----------|
+| USD | US Dollar |
+| EUR | Euro |
+| GBP | British Pound |
+| JPY | Japanese Yen |
+| CHF | Swiss Franc |
+| AUD | Australian Dollar |
+| CAD | Canadian Dollar |
+| NZD | New Zealand Dollar |
+| SEK | Swedish Krona |
+| NOK | Norwegian Krone |
+| DKK | Danish Krone |
+
+### Other Emerging Markets
 | Code | Currency |
 |------|----------|
 | AED | UAE Dirham |
 | INR | Indian Rupee |
 | CNY | Chinese Yuan |
-| EUR | Euro |
-| GBP | British Pound |
+| TRY | Turkish Lira |
 
 ## Quick Start
 
@@ -142,6 +179,68 @@ client.subscribe('KES/USD', (update) => {
 });
 ```
 
+## Economic Intelligence (What Makes AFXO Different)
+
+AFXO is more than a price feed — it's a **market intelligence platform**. Every currency pair includes economic signals that Chainlink and Pyth don't provide.
+
+### Market Signals
+
+| Signal | Description | Use Case |
+|--------|-------------|----------|
+| **Volatility Regime** | LOW / NORMAL / HIGH / EXTREME classification | Position sizing, risk limits |
+| **Realized Volatility** | 7d, 30d, 90d annualized volatility | Hedging, options pricing |
+| **Momentum** | 1d, 7d, 30d rate of change | Trend following strategies |
+| **Mean Reversion** | Z-score, Bollinger band position | Mean reversion strategies |
+
+### Carry Trade Signals
+
+| Currency | Policy Rate | Spread vs USD | Signal |
+|----------|-------------|---------------|--------|
+| NGN | 27.50% | +23.00% | **LONG** |
+| GHS | 27.00% | +22.50% | **LONG** |
+| KES | 12.00% | +7.50% | **LONG** |
+| ZAR | 7.75% | +3.25% | NEUTRAL |
+| BRL | 13.25% | +8.75% | **LONG** |
+| MXN | 10.25% | +5.75% | **LONG** |
+
+### Economic Data
+
+- Central bank policy rates (12 countries)
+- Inflation data (CPI/core inflation)
+- Real rate calculations
+- Central bank meeting calendars
+
+### API Example
+
+```bash
+curl -X GET "https://api.afxo.ai/v1/intelligence/KES" \
+  -H "X-API-Key: your_api_key"
+```
+
+Response:
+```json
+{
+  "currency": "KES",
+  "volatility": {
+    "regime": "NORMAL",
+    "realized_7d": 8.2,
+    "realized_30d": 12.4,
+    "percentile": 45
+  },
+  "carryTrade": {
+    "signal": "LONG",
+    "policyRate": 12.0,
+    "spreadVsUSD": 7.5,
+    "realRate": 4.2
+  },
+  "momentum": {
+    "direction": "BEARISH",
+    "roc_7d": -0.8,
+    "roc_30d": -2.1
+  }
+}
+```
+
 ## Documentation
 
 | Document | Description |
@@ -150,6 +249,7 @@ client.subscribe('KES/USD', (update) => {
 | [v2 One-Page Summary](./docs/v2-one-page-summary.md) | Quick reference card for AFXO v2 (print-friendly) |
 | [Quick Start: Signed Feeds](./docs/quick-start-signed-feeds.md) | Integration guide - get started in 5 minutes |
 | [AFXO vs Chainlink vs Pyth](./docs/comparison-chainlink-pyth.md) | **NEW:** Detailed competitive analysis - why AFXO v2 wins |
+| [Economic Intelligence](./docs/economic-intelligence.md) | **NEW:** Market signals, carry trade, and macro data |
 | [API Reference](./docs/api-reference.md) | REST & WebSocket API documentation |
 | [Smart Contracts](./docs/smart-contracts.md) | Contract addresses and integration guide |
 | [Methodology](./docs/methodology.md) | How rates are calculated and validated |
