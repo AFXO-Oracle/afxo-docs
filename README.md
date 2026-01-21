@@ -146,6 +146,10 @@ client.subscribe('KES/USD', (update) => {
 
 | Document | Description |
 |----------|-------------|
+| [Signed Price Feeds v2](./docs/signed-price-feeds-v2.md) | **NEW:** Complete technical specification - EIP-712 signed data standard |
+| [v2 One-Page Summary](./docs/v2-one-page-summary.md) | Quick reference card for AFXO v2 (print-friendly) |
+| [Quick Start: Signed Feeds](./docs/quick-start-signed-feeds.md) | Integration guide - get started in 5 minutes |
+| [AFXO vs Chainlink vs Pyth](./docs/comparison-chainlink-pyth.md) | **NEW:** Detailed competitive analysis - why AFXO v2 wins |
 | [API Reference](./docs/api-reference.md) | REST & WebSocket API documentation |
 | [Smart Contracts](./docs/smart-contracts.md) | Contract addresses and integration guide |
 | [Methodology](./docs/methodology.md) | How rates are calculated and validated |
