@@ -113,7 +113,7 @@ const AFXO_PRICE_FEED_V2_TYPES = {
 1. **DeFi Lending**: Quality metrics to pause if confidence drops
 2. **Cross-Chain Bridge**: Off-chain verification before bridging
 3. **Audit/Compliance**: Provenance hash proves sources used
-4. **Emerging Markets**: 27 African currencies live
+4. **Emerging Markets**: 50 currencies live (23 African + LatAm + Asia + G10)
 
 ---
 

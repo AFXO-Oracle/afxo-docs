@@ -8,7 +8,7 @@
 
 ## Overview
 
-AFXO provides reliable, verifiable FX rates for **50+ currencies** that existing oracles don't adequately cover — including African, Latin American, and Asian emerging market currencies. Unlike Chainlink and Pyth, AFXO also provides **economic intelligence signals**: volatility regimes, carry trade recommendations, and interest rate data.
+AFXO provides reliable, verifiable FX rates for **50+ currencies** that existing oracles don't adequately cover — including African, Latin American, and Asian emerging market currencies. Unlike Chainlink and Pyth, AFXO also provides **comprehensive economic intelligence**: volatility analytics, interest rate differentials, and quantitative metrics for informed decision-making.
 
 ### Key Features
 
@@ -181,34 +181,34 @@ client.subscribe('KES/USD', (update) => {
 
 ## Economic Intelligence (What Makes AFXO Different)
 
-AFXO is more than a price feed — it's a **market intelligence platform**. Every currency pair includes economic signals that Chainlink and Pyth don't provide.
+AFXO is more than a price feed — it's a **market data and analytics platform**. Every currency pair includes quantitative metrics that Chainlink and Pyth don't provide.
 
-### Market Signals
+### Market Analytics
 
-| Signal | Description | Use Case |
+| Metric | Description | Use Case |
 |--------|-------------|----------|
-| **Volatility Regime** | LOW / NORMAL / HIGH / EXTREME classification | Position sizing, risk limits |
-| **Realized Volatility** | 7d, 30d, 90d annualized volatility | Hedging, options pricing |
-| **Momentum** | 1d, 7d, 30d rate of change | Trend following strategies |
-| **Mean Reversion** | Z-score, Bollinger band position | Mean reversion strategies |
+| **Volatility Regime** | LOW / NORMAL / HIGH / EXTREME classification | Position sizing, risk calibration |
+| **Realized Volatility** | 7d, 30d, 90d annualized volatility | Risk management, analysis |
+| **Momentum Metrics** | 1d, 7d, 30d rate of change | Trend analysis |
+| **Statistical Analysis** | Z-score, Bollinger band position | Deviation analysis |
 
-### Carry Trade Signals
+### Interest Rate Differentials
 
-| Currency | Policy Rate | Spread vs USD | Signal |
-|----------|-------------|---------------|--------|
-| NGN | 27.50% | +23.00% | **LONG** |
-| GHS | 27.00% | +22.50% | **LONG** |
-| KES | 12.00% | +7.50% | **LONG** |
-| ZAR | 7.75% | +3.25% | NEUTRAL |
-| BRL | 13.25% | +8.75% | **LONG** |
-| MXN | 10.25% | +5.75% | **LONG** |
+| Currency | Policy Rate | Spread vs USD | Yield Tier |
+|----------|-------------|---------------|------------|
+| NGN | 27.50% | +23.00% | **HIGH** |
+| GHS | 27.00% | +22.50% | **HIGH** |
+| KES | 12.00% | +7.50% | **MEDIUM** |
+| ZAR | 7.75% | +3.25% | **LOW** |
+| BRL | 13.25% | +8.75% | **MEDIUM** |
+| MXN | 10.25% | +5.75% | **MEDIUM** |
 
 ### Economic Data
 
-- Central bank policy rates (12 countries)
-- Inflation data (CPI/core inflation)
+- Central bank policy rates (50 countries)
+- Inflation data from IMF (CPI projections)
 - Real rate calculations
-- Central bank meeting calendars
+- Yield tier classifications
 
 ### API Example
 
@@ -227,14 +227,14 @@ Response:
     "realized_30d": 12.4,
     "percentile": 45
   },
-  "carryTrade": {
-    "signal": "LONG",
+  "interestRates": {
     "policyRate": 12.0,
     "spreadVsUSD": 7.5,
-    "realRate": 4.2
+    "realRate": 4.2,
+    "yieldTier": "MEDIUM"
   },
   "momentum": {
-    "direction": "BEARISH",
+    "direction": "STABLE",
     "roc_7d": -0.8,
     "roc_30d": -2.1
   }

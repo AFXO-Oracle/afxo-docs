@@ -193,9 +193,270 @@ Returns current network and oracle status.
 {
   "status": "operational",
   "operators": 3,
-  "currencies": 27,
+  "currencies": 50,
   "avgConfidence": 92,
   "lastUpdate": "2025-01-20T12:00:00Z"
+}
+```
+
+---
+
+### Get Interest Rates
+
+```
+GET /rates/interest
+GET /rates/interest/{currency}
+```
+
+Returns central bank policy rates and yield tier classifications.
+
+**Response**
+
+```json
+{
+  "rates": [
+    {
+      "currency": "NGN",
+      "baseCurrency": "USD",
+      "policyRate": 27.5,
+      "spreadVsUSD": 23.0,
+      "yieldTier": "HIGH",
+      "realRate": 5.2,
+      "inflationRate": 22.3,
+      "source": "CBN",
+      "lastUpdated": "2026-01-22T00:00:00Z"
+    }
+  ],
+  "referenceRate": {
+    "currency": "USD",
+    "rate": 4.5,
+    "source": "Federal Reserve"
+  }
+}
+```
+
+---
+
+### Get Full Intelligence Report
+
+```
+GET /intelligence/{currency}
+```
+
+Returns complete economic intelligence package for a currency.
+
+**Response**
+
+```json
+{
+  "currency": "KES",
+  "timestamp": "2026-01-22T12:00:00Z",
+  "price": {
+    "rate": 0.00770,
+    "confidence": 94,
+    "sources": 5
+  },
+  "volatility": {
+    "regime": "NORMAL",
+    "realized_7d": 8.2,
+    "realized_30d": 12.4,
+    "percentile": 45
+  },
+  "momentum": {
+    "direction": "STABLE",
+    "roc_7d": -0.8,
+    "twap_24h": 0.00772
+  },
+  "statisticalAnalysis": {
+    "zScore": -0.8,
+    "bollingerPosition": 32,
+    "classification": "WITHIN_NORM"
+  },
+  "interestRates": {
+    "policyRate": 12.0,
+    "spreadVsUSD": 7.5,
+    "realRate": 4.2,
+    "inflationRate": 7.8,
+    "yieldTier": "MEDIUM"
+  }
+}
+```
+
+---
+
+## Quantitative Analytics API
+
+Advanced quantitative metrics for institutional analysis.
+
+### Interest Rate Parity (IRP) Analysis
+
+```
+GET /quant/irp
+GET /quant/irp/{currency}
+```
+
+Calculate implied forward premiums and covered interest differentials.
+
+**Response**
+
+```json
+{
+  "currency": "KES",
+  "baseCurrency": "USD",
+  "domesticRate": 12.0,
+  "foreignRate": 4.5,
+  "rateDifferential": 7.5,
+  "impliedForwardPremium": 7.5,
+  "forwardPoints1M": 6250,
+  "forwardPoints3M": 18750,
+  "forwardPoints12M": 75000,
+  "coveredCarry": 0,
+  "uncoveredCarry": 7.5,
+  "irpDeviation": 0.375,
+  "arbitrageOpportunity": false
+}
+```
+
+---
+
+### Carry-to-Volatility Ratios
+
+```
+GET /quant/carry-vol
+GET /quant/carry-vol/{currency}
+```
+
+Risk-adjusted return metrics (Sharpe-like) for currency pairs.
+
+**Response**
+
+```json
+{
+  "currency": "KES",
+  "carrySpread": 7.5,
+  "impliedVolatility": 12,
+  "carryToVol": 0.63,
+  "annualizedSharpe": 0.63,
+  "breakEvenMove": 7.5,
+  "probabilityOfProfit": 73.4,
+  "expectedReturn": 3.75,
+  "maxDrawdownEstimate": 31.5,
+  "kellyFraction": 0.5,
+  "riskTier": "MEDIUM"
+}
+```
+
+---
+
+### Z-Score Deviation Analysis
+
+```
+GET /quant/zscore
+GET /quant/zscore/{currency}
+```
+
+Statistical deviation from historical norms.
+
+**Response**
+
+```json
+{
+  "currency": "KES",
+  "currentRate": 12.0,
+  "historicalMean": 10.5,
+  "historicalStdDev": 2.1,
+  "zScore": 0.71,
+  "percentile": 76,
+  "meanReversionSignal": "NEUTRAL",
+  "expectedReversion": -0.35,
+  "halfLife": 45,
+  "confidence": 0.85
+}
+```
+
+---
+
+### Risk Parity Portfolio Weights
+
+```
+GET /quant/risk-parity
+```
+
+Inverse-volatility weighted allocations for all currencies.
+
+**Response**
+
+```json
+{
+  "currency": "KES",
+  "volatility": 12,
+  "inverseVol": 0.083,
+  "riskParityWeight": 1.07,
+  "equalWeight": 2.0,
+  "carryWeightedAllocation": 3.68,
+  "optimalAllocation": 2.12,
+  "maxPosition": 15
+}
+```
+
+---
+
+### Cross-Currency Spread Analysis
+
+```
+GET /quant/cross-currency/{currency1}/{currency2}
+```
+
+Compare any two currencies.
+
+**Response**
+
+```json
+{
+  "currency1": "KES",
+  "currency2": "NGN",
+  "rate1": 12.0,
+  "rate2": 27.5,
+  "spread": -15.5,
+  "spreadZScore": -1.69,
+  "convergenceSignal": "CONVERGE",
+  "relativeValue": "CHEAP",
+  "pairAnalysis": "KES vs NGN",
+  "expectedSpreadChange": 0.85
+}
+```
+
+---
+
+### Quant Dashboard
+
+```
+GET /quant/dashboard
+```
+
+Aggregate market overview with top opportunities.
+
+**Response**
+
+```json
+{
+  "timestamp": "2026-01-22T14:30:00Z",
+  "marketRegime": "RISK_ON",
+  "globalCarryIndex": 6.93,
+  "emCarryIndex": 9.08,
+  "g10CarryIndex": -0.66,
+  "volatilityRegime": "NORMAL",
+  "correlationRegime": "NORMAL",
+  "topCarryTrades": [
+    {"currency": "ARS", "score": 2.27},
+    {"currency": "AED", "score": 1.80},
+    {"currency": "TRY", "score": 1.52}
+  ],
+  "topMeanReversionTrades": [
+    {"currency": "NGN", "zScore": 2.25},
+    {"currency": "ARS", "zScore": 2.09}
+  ],
+  "riskWarnings": ["ARS: Extreme volatility (50%)"]
 }
 ```
 

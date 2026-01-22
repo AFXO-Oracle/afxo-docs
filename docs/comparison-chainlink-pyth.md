@@ -47,8 +47,8 @@ AFXO Signed Price Feed Standard v2 combines the best features of Chainlink (reli
 | **Data Quality** |
 | Multi-source aggregation | ✅ 3-10 sources | ✅ Yes | ✅ Yes | Tie |
 | Quality metrics | ✅ Confidence + count | ❌ No | ✅ Confidence | AFXO/Pyth |
-| Emerging market coverage | ✅ 27 currencies | ⚠️ Limited | ⚠️ Limited | **AFXO** |
-| African FX rates | ✅ Best-in-class | ❌ Poor | ❌ Poor | **AFXO** |
+| Emerging market coverage | ✅ 50 currencies | ⚠️ Limited | ⚠️ Limited | **AFXO** |
+| African FX rates | ✅ Best-in-class (23 currencies) | ❌ Poor | ❌ Poor | **AFXO** |
 
 **Legend:**
 - ✅ Fully supported
@@ -423,7 +423,7 @@ Pyth includes chain ID in signed data.
 
 | Feature | AFXO v2 | Chainlink | Pyth |
 |---------|---------|-----------|------|
-| African currencies | ✅ 27 live | ❌ Poor coverage | ❌ Poor coverage |
+| African currencies | ✅ 23 live (50 total) | ❌ Poor coverage | ❌ Poor coverage |
 | Source diversity | ✅ 8+ sources/currency | ⚠️ Limited | ⚠️ Limited |
 | Central bank data | ✅ Integrated | ❌ No | ❌ No |
 
