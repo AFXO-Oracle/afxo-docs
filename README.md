@@ -20,7 +20,7 @@ AFXO provides reliable, verifiable FX rates for **50+ currencies** that existing
 
 ## Supported Currencies (50+ Live)
 
-### African Currencies (20)
+### African Currencies (23)
 
 #### East Africa
 | Code | Currency |
