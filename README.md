@@ -1,4 +1,4 @@
-# AFXO — Emerging Markets FX Oracle
+# AFXO — Financial Intelligence & Verifiable Randomness
 
 [![Website](https://img.shields.io/badge/Website-afxo.ai-C1A464)](https://afxo.ai)
 [![Docs](https://img.shields.io/badge/Docs-Documentation-blue)](https://afxo.ai/docs)
