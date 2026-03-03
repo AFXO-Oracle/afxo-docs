@@ -14,57 +14,80 @@ Get your API key at [afxo.ai/get-access](https://afxo.ai/get-access).
 
 ---
 
-## Endpoints
+## FX Oracle Endpoints
 
 ### Get Current Rate
 
 ```
-GET /rates/{base}/{quote}
+GET /v1/rates/{currency}/{baseCurrency}
 ```
 
-Returns the current exchange rate for a currency pair.
+Returns the current exchange rate for a currency pair with confidence scoring and source breakdown.
 
 **Parameters**
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `base` | string | Base currency code (e.g., `KES`) |
-| `quote` | string | Quote currency code (e.g., `USD`) |
+| `currency` | string | Quote currency code (e.g., `KES`) |
+| `baseCurrency` | string | Base currency code (e.g., `USD`) |
+
+**Example**
+
+```bash
+curl "https://api.afxo.ai/v1/rates/KES/USD" -H "X-API-Key: your_api_key"
+```
 
 **Response**
 
 ```json
 {
-  "pair": "KES/USD",
-  "rate": "0.00770000",
-  "inverseRate": "129.87012987",
+  "quoteCurrency": "KES",
+  "baseCurrency": "USD",
+  "rate": 129.87,
   "confidence": 94,
-  "confidenceBand": "high",
-  "sources": 6,
-  "timestamp": "2025-01-20T12:00:00Z",
-  "updatedAt": "2025-01-20T12:00:00Z"
+  "timestamp": "2026-03-03T12:00:00Z",
+  "sources": [
+    {
+      "sourceId": "fastforex",
+      "rate": 129.85,
+      "weight": 0.25,
+      "included": true
+    },
+    {
+      "sourceId": "xe",
+      "rate": 129.90,
+      "weight": 0.18,
+      "included": true
+    }
+  ],
+  "metadata": {
+    "confidenceFactors": {
+      "sourceQuality": 0.95,
+      "agreement": 0.92,
+      "consistency": 0.96,
+      "freshness": 0.94
+    },
+    "antiCircularity": {
+      "passed": true,
+      "externalSourceCount": 6,
+      "dexWeight": 0
+    },
+    "statistics": {
+      "median": 129.87,
+      "stdDev": 0.12,
+      "coefficientOfVariation": 0.0009
+    },
+    "totalSources": 7
+  }
 }
 ```
 
-**Response Fields**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `pair` | string | Currency pair |
-| `rate` | string | Exchange rate (8 decimal precision) |
-| `inverseRate` | string | Inverse rate |
-| `confidence` | number | Confidence score (0-100) |
-| `confidenceBand` | string | `high` (85-100), `medium` (70-84), `low` (<70) |
-| `sources` | number | Number of active data sources |
-| `timestamp` | string | Rate timestamp (ISO 8601) |
-| `updatedAt` | string | Last update time |
-
 ---
 
-### Get Multiple Rates
+### Get Multiple Rates (Batch)
 
 ```
-GET /rates/batch
+GET /v1/rates/batch?pairs={pairs}
 ```
 
 Returns rates for multiple currency pairs in a single request.
@@ -86,67 +109,178 @@ curl "https://api.afxo.ai/v1/rates/batch?pairs=KES/USD,NGN/USD,GHS/USD" \
 
 ```json
 {
-  "rates": [
-    {
-      "pair": "KES/USD",
-      "rate": "0.00770000",
-      "confidence": 94,
-      "sources": 6,
-      "timestamp": "2025-01-20T12:00:00Z"
-    },
-    {
-      "pair": "NGN/USD",
-      "rate": "0.00063000",
-      "confidence": 91,
-      "sources": 5,
-      "timestamp": "2025-01-20T12:00:00Z"
-    }
-  ],
-  "requestedAt": "2025-01-20T12:00:01Z"
+  "success": true,
+  "data": {
+    "rates": [
+      {
+        "pair": "KES/USD",
+        "rate": 129.87,
+        "confidence": 94,
+        "sources": 6,
+        "timestamp": "2026-03-03T12:00:00Z"
+      },
+      {
+        "pair": "NGN/USD",
+        "rate": 1580.50,
+        "confidence": 91,
+        "sources": 5,
+        "timestamp": "2026-03-03T12:00:00Z"
+      }
+    ],
+    "requestedAt": "2026-03-03T12:00:01Z"
+  }
 }
 ```
+
+**Limits**: Maximum 20 pairs per batch request.
 
 ---
 
 ### Get Historical Rates
 
 ```
-GET /rates/{base}/{quote}/history
+GET /v1/rates/{currency}/{baseCurrency}/history
 ```
 
-Returns historical rate data. Requires Historical Data add-on.
+Returns historical rate data with configurable time period and aggregation interval.
 
 **Query Parameters**
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `from` | string | Start date (ISO 8601) |
-| `to` | string | End date (ISO 8601) |
-| `interval` | string | `hourly` or `daily` |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `period` | string | `24h` | Time period: `1h`, `6h`, `12h`, `24h`, `7d`, `30d`, `90d`, `365d` |
+| `interval` | string | `raw` | Aggregation: `raw`, `hourly`, `daily` |
 
 **Example**
 
 ```bash
-curl "https://api.afxo.ai/v1/rates/KES/USD/history?from=2025-01-01&to=2025-01-20&interval=daily" \
+curl "https://api.afxo.ai/v1/rates/KES/USD/history?period=7d&interval=daily" \
   -H "X-API-Key: your_api_key"
 ```
+
+**Response (raw interval)**
+
+```json
+{
+  "success": true,
+  "data": {
+    "pair": "KES/USD",
+    "period": "24h",
+    "interval": "raw",
+    "count": 288,
+    "rates": [
+      {
+        "time": "2026-03-02T12:00:00Z",
+        "rate": 129.82,
+        "confidence": 93
+      }
+    ]
+  }
+}
+```
+
+**Response (daily interval)**
+
+```json
+{
+  "success": true,
+  "data": {
+    "pair": "KES/USD",
+    "period": "7d",
+    "interval": "daily",
+    "count": 7,
+    "rates": [
+      {
+        "time": "2026-02-25",
+        "open": 129.68,
+        "high": 130.12,
+        "low": 129.45,
+        "close": 129.87,
+        "avgConfidence": 92,
+        "dataPoints": 288
+      }
+    ]
+  }
+}
+```
+
+---
+
+### Get Market Intelligence
+
+```
+GET /v1/rates/{currency}/{baseCurrency}/intelligence
+```
+
+Returns market intelligence including volatility analysis, momentum indicators, and statistical measures.
 
 **Response**
 
 ```json
 {
-  "pair": "KES/USD",
-  "interval": "daily",
-  "data": [
-    {
-      "date": "2025-01-01",
-      "open": "0.00768000",
-      "high": "0.00772000",
-      "low": "0.00765000",
-      "close": "0.00770000",
-      "avgConfidence": 92
+  "success": true,
+  "data": {
+    "currency": "KES",
+    "baseCurrency": "USD",
+    "volatility": {
+      "realized7d": 8.2,
+      "realized30d": 12.4,
+      "regime": "NORMAL"
+    },
+    "momentum": {
+      "direction": "STABLE",
+      "roc7d": -0.8,
+      "twap24h": 129.90
+    },
+    "statistics": {
+      "zScore": -0.8,
+      "bollingerPosition": 32,
+      "classification": "WITHIN_NORM"
     }
-  ]
+  }
+}
+```
+
+---
+
+### Get EIP-712 Signed Rate
+
+```
+GET /v1/signed/{baseCurrency}/{quoteCurrency}/signed
+```
+
+Returns a cryptographically signed price feed using EIP-712 typed data signatures. Designed for on-chain consumption by smart contracts.
+
+See [Signed Price Feeds v2](signed-price-feeds-v2.md) for detailed specification.
+
+**Query Parameters**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `chainId` | number | 43114 | Target chain ID |
+| `validity` | number | 300 | Signature validity in seconds |
+
+**Response**
+
+```json
+{
+  "success": true,
+  "version": "2.0.0",
+  "feed": {
+    "feedId": "0x...",
+    "pair": "USD/KES",
+    "price": "12987000000",
+    "decimals": 8,
+    "confidence": 9400,
+    "sourceCount": 6,
+    "timestamp": 1709474400,
+    "validUntil": 1709474700,
+    "round": 12345,
+    "chainId": 43114,
+    "aggregationHash": "0x..."
+  },
+  "signature": "0x...",
+  "signer": "0x..."
 }
 ```
 
@@ -155,47 +289,93 @@ curl "https://api.afxo.ai/v1/rates/KES/USD/history?from=2025-01-01&to=2025-01-20
 ### Get Supported Currencies
 
 ```
-GET /currencies
+GET /v1/currencies
 ```
 
-Returns list of all supported currencies.
+Returns list of all supported currencies. **No authentication required.**
 
 **Response**
 
 ```json
 {
-  "currencies": [
-    {
-      "code": "KES",
-      "name": "Kenyan Shilling",
-      "country": "Kenya",
-      "region": "East Africa",
-      "supported": true,
-      "sources": 6
-    }
-  ]
+  "success": true,
+  "data": {
+    "baseCurrency": "USD",
+    "currencies": ["KES", "NGN", "GHS", "ZAR", "EGP", "..."],
+    "pairs": ["USD/KES", "USD/NGN", "..."],
+    "count": 79
+  }
 }
 ```
 
 ---
 
-### Get Network Status
+### Get System Status
 
 ```
-GET /status
+GET /v1/status
 ```
 
-Returns current network and oracle status.
+Returns current system status. **No authentication required.**
 
 **Response**
 
 ```json
 {
-  "status": "operational",
-  "operators": 3,
-  "currencies": 50,
-  "avgConfidence": 92,
-  "lastUpdate": "2025-01-20T12:00:00Z"
+  "success": true,
+  "data": {
+    "status": "operational",
+    "timestamp": "2026-03-03T12:00:00Z",
+    "services": {
+      "aggregator": "operational",
+      "database": "operational",
+      "signing": "operational",
+      "marketIntelligence": "operational"
+    },
+    "apiAuth": "enabled"
+  }
+}
+```
+
+---
+
+## Economic Intelligence Endpoints
+
+### Get Full Intelligence Report
+
+```
+GET /v1/intelligence/{currency}
+```
+
+Returns complete economic intelligence package for a currency including carry trade signals, real rate analysis, and economic indicators.
+
+**Response**
+
+```json
+{
+  "success": true,
+  "timestamp": "2026-03-03T12:00:00Z",
+  "currency": "KES",
+  "data": {
+    "interestRate": {
+      "policyRate": 12.0,
+      "source": "CBK"
+    },
+    "inflation": {
+      "rate": 7.8,
+      "source": "KNBS"
+    },
+    "carryTrade": {
+      "spread": 7.5,
+      "signal": "MODERATE_BUY",
+      "riskAdjustedReturn": 0.63
+    },
+    "realRate": {
+      "nominal": 12.0,
+      "real": 4.2,
+      "signal": "POSITIVE"
+    }
+  }
 }
 ```
 
@@ -204,8 +384,8 @@ Returns current network and oracle status.
 ### Get Interest Rates
 
 ```
-GET /rates/interest
-GET /rates/interest/{currency}
+GET /v1/rates/interest
+GET /v1/rates/interest/{currency}
 ```
 
 Returns central bank policy rates and yield tier classifications.
@@ -214,17 +394,18 @@ Returns central bank policy rates and yield tier classifications.
 
 ```json
 {
+  "success": true,
+  "timestamp": "2026-03-03T12:00:00Z",
+  "count": 50,
   "rates": [
     {
       "currency": "NGN",
-      "baseCurrency": "USD",
       "policyRate": 27.5,
       "spreadVsUSD": 23.0,
       "yieldTier": "HIGH",
       "realRate": 5.2,
       "inflationRate": 22.3,
-      "source": "CBN",
-      "lastUpdated": "2026-01-22T00:00:00Z"
+      "source": "CBN"
     }
   ],
   "referenceRate": {
@@ -237,62 +418,15 @@ Returns central bank policy rates and yield tier classifications.
 
 ---
 
-### Get Full Intelligence Report
-
-```
-GET /intelligence/{currency}
-```
-
-Returns complete economic intelligence package for a currency.
-
-**Response**
-
-```json
-{
-  "currency": "KES",
-  "timestamp": "2026-01-22T12:00:00Z",
-  "price": {
-    "rate": 0.00770,
-    "confidence": 94,
-    "sources": 5
-  },
-  "volatility": {
-    "regime": "NORMAL",
-    "realized_7d": 8.2,
-    "realized_30d": 12.4,
-    "percentile": 45
-  },
-  "momentum": {
-    "direction": "STABLE",
-    "roc_7d": -0.8,
-    "twap_24h": 0.00772
-  },
-  "statisticalAnalysis": {
-    "zScore": -0.8,
-    "bollingerPosition": 32,
-    "classification": "WITHIN_NORM"
-  },
-  "interestRates": {
-    "policyRate": 12.0,
-    "spreadVsUSD": 7.5,
-    "realRate": 4.2,
-    "inflationRate": 7.8,
-    "yieldTier": "MEDIUM"
-  }
-}
-```
-
----
-
-## Quantitative Analytics API
+## Quantitative Analytics Endpoints
 
 Advanced quantitative metrics for institutional analysis.
 
 ### Interest Rate Parity (IRP) Analysis
 
 ```
-GET /quant/irp
-GET /quant/irp/{currency}
+GET /v1/quant/irp
+GET /v1/quant/irp/{currency}
 ```
 
 Calculate implied forward premiums and covered interest differentials.
@@ -301,6 +435,8 @@ Calculate implied forward premiums and covered interest differentials.
 
 ```json
 {
+  "success": true,
+  "timestamp": "2026-03-03T12:00:00Z",
   "currency": "KES",
   "baseCurrency": "USD",
   "domesticRate": 12.0,
@@ -312,7 +448,6 @@ Calculate implied forward premiums and covered interest differentials.
   "forwardPoints12M": 75000,
   "coveredCarry": 0,
   "uncoveredCarry": 7.5,
-  "irpDeviation": 0.375,
   "arbitrageOpportunity": false
 }
 ```
@@ -322,8 +457,8 @@ Calculate implied forward premiums and covered interest differentials.
 ### Carry-to-Volatility Ratios
 
 ```
-GET /quant/carry-vol
-GET /quant/carry-vol/{currency}
+GET /v1/quant/carry-vol
+GET /v1/quant/carry-vol/{currency}
 ```
 
 Risk-adjusted return metrics (Sharpe-like) for currency pairs.
@@ -332,6 +467,7 @@ Risk-adjusted return metrics (Sharpe-like) for currency pairs.
 
 ```json
 {
+  "success": true,
   "currency": "KES",
   "carrySpread": 7.5,
   "impliedVolatility": 12,
@@ -339,9 +475,6 @@ Risk-adjusted return metrics (Sharpe-like) for currency pairs.
   "annualizedSharpe": 0.63,
   "breakEvenMove": 7.5,
   "probabilityOfProfit": 73.4,
-  "expectedReturn": 3.75,
-  "maxDrawdownEstimate": 31.5,
-  "kellyFraction": 0.5,
   "riskTier": "MEDIUM"
 }
 ```
@@ -351,8 +484,8 @@ Risk-adjusted return metrics (Sharpe-like) for currency pairs.
 ### Z-Score Deviation Analysis
 
 ```
-GET /quant/zscore
-GET /quant/zscore/{currency}
+GET /v1/quant/zscore
+GET /v1/quant/zscore/{currency}
 ```
 
 Statistical deviation from historical norms.
@@ -361,6 +494,7 @@ Statistical deviation from historical norms.
 
 ```json
 {
+  "success": true,
   "currency": "KES",
   "currentRate": 12.0,
   "historicalMean": 10.5,
@@ -368,7 +502,6 @@ Statistical deviation from historical norms.
   "zScore": 0.71,
   "percentile": 76,
   "meanReversionSignal": "NEUTRAL",
-  "expectedReversion": -0.35,
   "halfLife": 45,
   "confidence": 0.85
 }
@@ -379,59 +512,27 @@ Statistical deviation from historical norms.
 ### Risk Parity Portfolio Weights
 
 ```
-GET /quant/risk-parity
+GET /v1/quant/risk-parity
 ```
 
-Inverse-volatility weighted allocations for all currencies.
-
-**Response**
-
-```json
-{
-  "currency": "KES",
-  "volatility": 12,
-  "inverseVol": 0.083,
-  "riskParityWeight": 1.07,
-  "equalWeight": 2.0,
-  "carryWeightedAllocation": 3.68,
-  "optimalAllocation": 2.12,
-  "maxPosition": 15
-}
-```
+Inverse-volatility weighted allocations for all supported currencies.
 
 ---
 
 ### Cross-Currency Spread Analysis
 
 ```
-GET /quant/cross-currency/{currency1}/{currency2}
+GET /v1/quant/cross-currency/{currency1}/{currency2}
 ```
 
-Compare any two currencies.
-
-**Response**
-
-```json
-{
-  "currency1": "KES",
-  "currency2": "NGN",
-  "rate1": 12.0,
-  "rate2": 27.5,
-  "spread": -15.5,
-  "spreadZScore": -1.69,
-  "convergenceSignal": "CONVERGE",
-  "relativeValue": "CHEAP",
-  "pairAnalysis": "KES vs NGN",
-  "expectedSpreadChange": 0.85
-}
-```
+Compare any two currencies with spread, relative value, and convergence signals.
 
 ---
 
 ### Quant Dashboard
 
 ```
-GET /quant/dashboard
+GET /v1/quant/dashboard
 ```
 
 Aggregate market overview with top opportunities.
@@ -440,21 +541,17 @@ Aggregate market overview with top opportunities.
 
 ```json
 {
-  "timestamp": "2026-01-22T14:30:00Z",
+  "success": true,
+  "timestamp": "2026-03-03T12:00:00Z",
   "marketRegime": "RISK_ON",
   "globalCarryIndex": 6.93,
-  "emCarryIndex": 9.08,
-  "g10CarryIndex": -0.66,
   "volatilityRegime": "NORMAL",
-  "correlationRegime": "NORMAL",
   "topCarryTrades": [
     {"currency": "ARS", "score": 2.27},
-    {"currency": "AED", "score": 1.80},
-    {"currency": "TRY", "score": 1.52}
+    {"currency": "AED", "score": 1.80}
   ],
   "topMeanReversionTrades": [
-    {"currency": "NGN", "zScore": 2.25},
-    {"currency": "ARS", "zScore": 2.09}
+    {"currency": "NGN", "zScore": 2.25}
   ],
   "riskWarnings": ["ARS: Extreme volatility (50%)"]
 }
@@ -462,54 +559,103 @@ Aggregate market overview with top opportunities.
 
 ---
 
+## TrueRandom Endpoints
+
+Verifiable randomness beacon on Avalanche C-Chain.
+
+See [TrueRandom API Reference](truerandom-api.md) for full documentation.
+
+### Quick Reference
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /v1/truerandom/health` | Service health |
+| `GET /v1/truerandom/beacon/latest` | Latest beacon |
+| `GET /v1/truerandom/beacon/{round}` | Beacon by round |
+| `GET /v1/truerandom/beacon/derive` | Derive random value |
+| `GET /v1/truerandom/committee/status` | Committee info |
+
+---
+
 ## WebSocket API
 
-Connect to real-time rate updates via WebSocket.
+Connect to real-time updates via the unified WebSocket gateway.
 
 **Endpoint**: `wss://api.afxo.ai/v1/ws`
 
-### Connection
+### Subscribe to Channels
 
 ```javascript
 const ws = new WebSocket('wss://api.afxo.ai/v1/ws');
 
 ws.onopen = () => {
-  // Authenticate
   ws.send(JSON.stringify({
-    type: 'auth',
-    apiKey: 'your_api_key'
+    type: 'subscribe',
+    channels: ['rates:KES/USD', 'rates:NGN/USD', 'truerandom:beacons']
   }));
 };
-```
 
-### Subscribe to Rates
-
-```javascript
-// Subscribe to specific pairs
-ws.send(JSON.stringify({
-  type: 'subscribe',
-  pairs: ['KES/USD', 'NGN/USD']
-}));
-
-// Receive updates
 ws.onmessage = (event) => {
   const data = JSON.parse(event.data);
-  if (data.type === 'rate') {
-    console.log(data.pair, data.rate, data.confidence);
+
+  switch (data.type) {
+    case 'rate':
+      console.log(`${data.pair}: ${data.rate} (confidence: ${data.confidence})`);
+      break;
+    case 'beacon':
+      console.log(`Beacon round ${data.round}: ${data.randomness}`);
+      break;
+    case 'heartbeat':
+      // Connection alive
+      break;
   }
 };
 ```
+
+### Available Channels
+
+| Channel | Format | Description |
+|---------|--------|-------------|
+| `rates:{PAIR}` | `rates:KES/USD` | FX rate updates (~5s interval) |
+| `truerandom:beacons` | — | New beacon events (~5min interval) |
 
 ### Message Types
 
 | Type | Direction | Description |
 |------|-----------|-------------|
-| `auth` | Client → Server | Authenticate connection |
-| `subscribe` | Client → Server | Subscribe to pairs |
-| `unsubscribe` | Client → Server | Unsubscribe from pairs |
-| `rate` | Server → Client | Rate update |
-| `heartbeat` | Server → Client | Keep-alive ping |
+| `subscribe` | Client → Server | Subscribe to channels |
+| `unsubscribe` | Client → Server | Unsubscribe from channels |
+| `subscribed` | Server → Client | Subscription confirmation |
+| `unsubscribed` | Server → Client | Unsubscription confirmation |
+| `rate` | Server → Client | FX rate update |
+| `beacon` | Server → Client | TrueRandom beacon event |
+| `heartbeat` | Server → Client | Keep-alive (every 30s) |
 | `error` | Server → Client | Error message |
+
+### Rate Update Format
+
+```json
+{
+  "type": "rate",
+  "pair": "KES/USD",
+  "rate": 129.87,
+  "confidence": 94,
+  "sources": 6,
+  "timestamp": "2026-03-03T12:00:05Z"
+}
+```
+
+### Beacon Event Format
+
+```json
+{
+  "type": "beacon",
+  "round": 328,
+  "randomness": "0x9c5f3a...",
+  "timestamp": "2026-03-03T12:05:00Z",
+  "beaconId": "0xdef789..."
+}
+```
 
 ---
 
@@ -528,7 +674,7 @@ Rate limit headers are included in responses:
 ```
 X-RateLimit-Limit: 10000
 X-RateLimit-Remaining: 9542
-X-RateLimit-Reset: 1705766400
+X-RateLimit-Reset: 1709474400
 ```
 
 ---
@@ -543,16 +689,14 @@ X-RateLimit-Reset: 1705766400
 | `404` | Not found — unsupported currency pair |
 | `429` | Rate limit exceeded |
 | `500` | Internal server error |
+| `503` | Service unavailable — feature not configured |
 
 **Error Response Format**
 
 ```json
 {
-  "error": {
-    "code": "RATE_LIMIT_EXCEEDED",
-    "message": "Daily rate limit exceeded. Upgrade your plan for higher limits.",
-    "retryAfter": 3600
-  }
+  "success": false,
+  "error": "Rate limit exceeded. Upgrade your plan for higher limits."
 }
 ```
 
@@ -562,7 +706,73 @@ X-RateLimit-Reset: 1705766400
 
 Official SDKs are available:
 
-- **JavaScript/TypeScript**: `npm install @afxo/sdk`
-- **Python**: `pip install afxo-sdk` (coming soon)
+### TypeScript / JavaScript
 
-See [examples](../examples/) for usage patterns.
+```bash
+npm install @afxo/sdk
+```
+
+```typescript
+import { AFXOClient } from '@afxo/sdk';
+
+const client = new AFXOClient({ apiKey: 'your-key' });
+
+// Get current rate
+const rate = await client.getRate('KES', 'USD');
+console.log(rate.rate, rate.confidence);
+
+// Batch rates
+const batch = await client.getRatesBatch(['KES/USD', 'NGN/USD']);
+
+// Historical data
+const history = await client.getHistory('KES', 'USD', '7d', 'daily');
+
+// Signed feed (for smart contracts)
+const signed = await client.getSignedRate('USD', 'KES');
+
+// Economic intelligence
+const intel = await client.getIntelligence('KES');
+
+// Quant dashboard
+const dashboard = await client.getQuantDashboard();
+
+// TrueRandom beacon
+const beacon = await client.getLatestBeacon();
+
+// Real-time streaming
+const stream = client.stream(['rates:KES/USD', 'truerandom:beacons']);
+stream.onRate((data) => console.log(data.pair, data.rate));
+stream.onBeacon((data) => console.log(data.round, data.randomness));
+stream.connect();
+```
+
+### Python
+
+```bash
+pip install afxo-sdk
+```
+
+```python
+from afxo import AFXOClient
+
+client = AFXOClient(api_key="your-key")
+
+# Get current rate
+rate = client.get_rate("KES", "USD")
+print(rate.rate, rate.confidence)
+
+# Batch rates
+batch = client.get_rates_batch(["KES/USD", "NGN/USD"])
+
+# Historical data
+history = client.get_history("KES", "USD", period="7d", interval="daily")
+
+# Economic intelligence
+intel = client.get_intelligence("KES")
+
+# Quant dashboard
+dashboard = client.get_quant_dashboard()
+
+# TrueRandom beacon
+beacon = client.get_latest_beacon()
+```

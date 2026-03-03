@@ -91,7 +91,7 @@ Z-score and standard deviation metrics:
 ### Interest Rate API
 
 ```bash
-curl -X GET "https://api.afxo.ai/api/v1/rates/interest" \
+curl -X GET "https://api.afxo.ai/v1/rates/interest" \
   -H "X-API-Key: your_api_key"
 ```
 
@@ -138,8 +138,8 @@ AFXO provides advanced quantitative metrics typically available only to institut
 ### Interest Rate Parity (IRP) Analysis
 
 ```bash
-GET /api/v1/quant/irp
-GET /api/v1/quant/irp/:currency
+GET /v1/quant/irp
+GET /v1/quant/irp/:currency
 ```
 
 Calculate implied forward premiums and covered interest differentials:
@@ -165,7 +165,7 @@ Calculate implied forward premiums and covered interest differentials:
 ### Carry-to-Volatility Ratios (Sharpe-like Metrics)
 
 ```bash
-GET /api/v1/quant/carry-vol
+GET /v1/quant/carry-vol
 ```
 
 Risk-adjusted return metrics for every currency pair:
@@ -189,7 +189,7 @@ Risk-adjusted return metrics for every currency pair:
 ### Z-Score Deviation Analysis
 
 ```bash
-GET /api/v1/quant/zscore
+GET /v1/quant/zscore
 ```
 
 Statistical deviation from historical norms:
@@ -212,7 +212,7 @@ Statistical deviation from historical norms:
 ### Risk Parity Portfolio Weights
 
 ```bash
-GET /api/v1/quant/risk-parity
+GET /v1/quant/risk-parity
 ```
 
 Inverse-volatility weighted allocations:
@@ -233,7 +233,7 @@ Inverse-volatility weighted allocations:
 ### Cross-Currency Spread Analysis
 
 ```bash
-GET /api/v1/quant/cross-currency/:currency1/:currency2
+GET /v1/quant/cross-currency/:currency1/:currency2
 ```
 
 Compare any two currencies:
@@ -256,7 +256,7 @@ Compare any two currencies:
 ### Quant Dashboard
 
 ```bash
-GET /api/v1/quant/dashboard
+GET /v1/quant/dashboard
 ```
 
 Aggregate market overview:
@@ -288,21 +288,21 @@ Aggregate market overview:
 ### Interest Rates
 
 ```bash
-GET /api/v1/rates/interest
-GET /api/v1/rates/interest/:currency
+GET /v1/rates/interest
+GET /v1/rates/interest/:currency
 ```
 
 ### Real Rate Analysis
 
 ```bash
-GET /api/v1/signals/real-rate
-GET /api/v1/signals/real-rate/:currency
+GET /v1/signals/real-rate
+GET /v1/signals/real-rate/:currency
 ```
 
 ### Full Intelligence Report
 
 ```bash
-GET /api/v1/intelligence/:currency
+GET /v1/intelligence/:currency
 ```
 
 Returns complete intelligence package:
