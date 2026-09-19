@@ -13,7 +13,7 @@ AFXO provides reliable, verifiable FX rates for **50+ currencies** that existing
 ### Key Features
 
 - **Multi-Source Aggregation** — Each rate is the weighted median of several independent sources (five for fiat pairs today), never fewer than three
-- **Quality Control** — Statistical outlier exclusion, a deviation circuit breaker, and a confidence score on every rate
+- **Quality Control** — Statistical outlier exclusion, a deviation circuit breaker, and a confidence score on every rate; an ML anomaly check gates on-chain updates
 - **On-Chain Delivery** — Avalanche C-Chain as canonical root, expanding to Celo, Base, Arbitrum, Solana
 - **Industry-Standard Interface** — Drop-in compatible with existing DeFi protocols
 - **Verifiable Inputs** — Every signed rate commits to the exact quotes behind it; holders of an audit key can retrieve them and recompute the rate ([methodology](./docs/methodology.md))

@@ -64,7 +64,7 @@ Sort the included quotes; walk the cumulative weight; the published rate is the 
 
 ## Quality Control
 
-Quality control on the rate path is **statistical, not machine learning**: the outlier exclusion above, the source floor, and the safeguards below. Anomaly-detection models (Isolation Forest, LSTM autoencoder) are trained offline for research; they do not influence any published rate.
+The value of a rate is decided by statistics alone: the outlier exclusion above, the source floor, and the safeguards below. Machine learning is used in one place. Before each **on-chain** update, the rate is sent to an anomaly service (Isolation Forest together with Z-score and MAD tests); if it is flagged, that on-chain update is skipped and the previous on-chain value stands. The anomaly check never changes a rate's value, and it does not gate the signed API rates.
 
 ### Safeguards
 
@@ -73,6 +73,7 @@ Quality control on the rate path is **statistical, not machine learning**: the o
 | **Source floor** | Fewer than three weighted sources → no rate |
 | **Deviation circuit breaker** | A move of more than 300 bps against the last published rate halts the pair. The halt is latched until an operator reviews and clears it |
 | **Storage before publication** | If the record of inputs cannot be stored, the rate is withheld |
+| **ML anomaly gate (on-chain only)** | A rate flagged by the anomaly service is not pushed on-chain |
 
 ---
 
