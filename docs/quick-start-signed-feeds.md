@@ -1,5 +1,9 @@
 # Quick Start: AFXO Signed Price Feeds v2
 
+> **Signer address (testnet).** AFXO signed feeds are signed by `0x92e975Ce2C6bCC6B9D6f59E5a7293e7B6A8A70A9` from 19 September 2026.
+> The previous address, `0xd06d98F345B0DD3E21F04CA9FD5e27f6835E03Fd`, is retired: reject any feed signed by it with a `timestamp` after 2026-09-19.
+> Do not hard-code the signer where you cannot change it; keep it in configuration so a rotation is a config change.
+
 **Author:** Vincent Scaturchio
 **Last Updated:** 2026-01-21
 
@@ -55,7 +59,7 @@ const data = await response.json();
     "s": "0x...",
     "packed": "0x..."
   },
-  "signer": "0xd06d98F345B0DD3E21F04CA9FD5e27f6835E03Fd"
+  "signer": "0x92e975Ce2C6bCC6B9D6f59E5a7293e7B6A8A70A9"
 }
 ```
 
@@ -112,7 +116,7 @@ function verifySignature(data: any, expectedSigner: string, expectedChainId: num
 }
 
 // Usage
-const AFXO_SIGNER = '0xd06d98F345B0DD3E21F04CA9FD5e27f6835E03Fd';
+const AFXO_SIGNER = '0x92e975Ce2C6bCC6B9D6f59E5a7293e7B6A8A70A9';
 const isValid = verifySignature(data, AFXO_SIGNER, 43114);
 
 if (!isValid) {
@@ -146,7 +150,7 @@ console.log(`Data age: ${age} seconds`);
 import { ethers } from 'ethers';
 
 const AFXO_API = 'https://api.afxo.ai';
-const AFXO_SIGNER = '0xd06d98F345B0DD3E21F04CA9FD5e27f6835E03Fd';
+const AFXO_SIGNER = '0x92e975Ce2C6bCC6B9D6f59E5a7293e7B6A8A70A9';
 const CHAIN_ID = 43114; // Avalanche C-Chain
 
 async function getVerifiedPrice(base: string, quote: string) {
@@ -260,7 +264,7 @@ import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 contract AFXOConsumer is EIP712 {
     using ECDSA for bytes32;
 
-    address public constant AFXO_SIGNER = 0xd06d98F345B0DD3E21F04CA9FD5e27f6835E03Fd;
+    address public constant AFXO_SIGNER = 0x92e975Ce2C6bCC6B9D6f59E5a7293e7B6A8A70A9;
 
     bytes32 private constant TYPEHASH = keccak256(
         "AFXOPriceFeed(bytes32 feedId,int256 price,uint8 decimals,uint16 confidence,uint8 sourceCount,uint64 timestamp,uint64 validUntil,uint64 round,uint64 chainId,bytes32 aggregationHash)"
@@ -381,7 +385,7 @@ Before using signed price feeds in production:
 // AFXO Constants
 export const AFXO = {
   API_URL: 'https://api.afxo.ai',
-  SIGNER: '0xd06d98F345B0DD3E21F04CA9FD5e27f6835E03Fd',
+  SIGNER: '0x92e975Ce2C6bCC6B9D6f59E5a7293e7B6A8A70A9',
 
   DOMAIN: {
     name: 'AFXO Oracle',
