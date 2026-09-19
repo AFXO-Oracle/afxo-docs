@@ -4,117 +4,98 @@ How AFXO calculates and validates FX rates for emerging markets.
 
 ## Overview
 
-AFXO aggregates FX data from multiple institutional sources, applies AI-powered quality control, and publishes validated rates on-chain through a decentralized verification network.
+AFXO collects quotes for each currency pair from several independent sources, removes statistical outliers, publishes the weighted median of what remains, and signs the result. Every published rate carries a hash that commits to the exact quotes and weights behind it, so a holder of a signed rate can obtain those inputs and recompute the rate.
 
 ```
-Data Sources → Aggregation → AI Validation → Consensus → On-Chain
+Sources → Outlier exclusion → Weighted median → Safeguards → Signed rate (+ stored inputs)
 ```
+
+**Status:** AFXO is in pre-production (Avalanche Fuji testnet). The source set below is the pre-production set and will change before production launch. The build that is running is always stated at `GET https://api.afxo.ai/version`.
 
 ---
 
 ## Data Sources
 
-### Source Categories
+### Source Categories (pre-production)
 
-| Category | Examples | Weight |
-|----------|----------|--------|
-| **Tier 1: Institutional** | OANDA, XE, Kaiko | High |
-| **Tier 2: Central Banks** | CBK, CBN, SARB | High |
-| **Tier 3: Market Data** | Reuters, Bloomberg | Medium |
-| **Tier 4: Aggregators** | Open Exchange Rates, Fixer | Medium |
-| **Tier 5: P2P/Market** | Binance P2P (validation only) | Low |
+| Category | Role |
+|----------|------|
+| **Commercial FX data APIs** (licensed subscriptions) | Primary fiat quotes, refreshed every 60 seconds |
+| **Publicly quoted rates of major FX and money-transfer providers** | Primary fiat quotes |
+| **Free reference-rate APIs** | Secondary; refreshed daily |
+| **P2P market quotes** | Selected African pairs |
+| **Regulated crypto exchanges and a market-data aggregator** | Stablecoin pairs only |
 
-### Source Requirements
+No central-bank feed and no terminal-grade (Reuters/Bloomberg) feed is connected today.
 
-- Minimum 3 active sources per currency
-- At least 1 Tier 1 or Tier 2 source
-- Geographic diversity where possible
-- Independent data paths (no circular dependencies)
+### Source Floor
+
+- A rate is published only when **at least three sources that carry weight** remain after outlier exclusion.
+- The floor cannot be lowered by configuration: the service refuses to start if it is set below three.
+- When a pair falls below the floor the API returns HTTP 503 for that pair rather than a rate.
 
 ### Anti-Circularity
 
-AFXO explicitly avoids circular dependencies:
-
-- **Primary**: External institutional FX sources
-- **Validation only**: On-chain DEX prices (never used as primary input)
-- **Halt condition**: If external sources drop below 3, updates are paused
+- **Primary**: external off-chain FX sources.
+- **Never an input**: on-chain DEX prices of any customer's tokens.
 
 ---
 
 ## Aggregation
 
+### Outlier Exclusion
+
+Quotes are compared using the median absolute deviation (modified Z-score, threshold 3.5). A quote beyond the threshold is excluded, unless excluding it would leave fewer than three. Excluded quotes are kept in the record with the reason for exclusion.
+
 ### Weighted Median
 
-AFXO uses a weighted median algorithm to aggregate rates:
-
-1. Collect rates from all active sources
-2. Apply source-specific weights based on reliability
-3. Calculate the weighted median (not mean)
-4. Outliers beyond 2 standard deviations are flagged
-
 ```
-Final Rate = WeightedMedian(source_rates, source_weights)
+Published Rate = WeightedMedian(included_quotes, source_weights)
 ```
+
+Sort the included quotes; walk the cumulative weight; the published rate is the quote at which the cumulative weight first passes half the total (if it lands exactly on half, the mean of that quote and the next). The weighted average is computed alongside and recorded, but it is not the published rate.
 
 ### Why Weighted Median?
 
-- **Resistant to outliers**: Single bad source can't skew the result
-- **Handles asymmetric data**: Works well with illiquid markets
-- **Transparent**: Easy to audit and reproduce
+- **Resistant to one bad source**: a single quote cannot move the result beyond its neighbours
+- **Reproducible**: anyone holding the inputs gets the same number
 
 ---
 
-## AI Quality Control
+## Quality Control
 
-### Anomaly Detection
+Quality control on the rate path is **statistical, not machine learning**: the outlier exclusion above, the source floor, and the safeguards below. Anomaly-detection models (Isolation Forest, LSTM autoencoder) are trained offline for research; they do not influence any published rate.
 
-AFXO uses machine learning to detect anomalies:
+### Safeguards
 
-| Model | Purpose |
-|-------|---------|
-| **Isolation Forest** | Detect unusual rate patterns |
-| **LSTM Autoencoder** | Identify sequence anomalies |
-| **Statistical Tests** | Z-score, IQR outlier detection |
-
-### Anomaly Types Detected
-
-- Sudden price spikes or crashes
-- Stale data (source stopped updating)
-- Source divergence (one source significantly different)
-- Pattern anomalies (unusual volatility)
-
-### Anomaly Response
-
-| Severity | Action |
-|----------|--------|
-| Low | Flag for review, proceed with publication |
-| Medium | Reduce confidence score, publish with warning |
-| High | Exclude anomalous source, recalculate |
-| Critical | Halt updates, alert operators |
+| Safeguard | Behaviour |
+|-----------|-----------|
+| **Source floor** | Fewer than three weighted sources → no rate |
+| **Deviation circuit breaker** | A move of more than 300 bps against the last published rate halts the pair. The halt is latched until an operator reviews and clears it |
+| **Storage before publication** | If the record of inputs cannot be stored, the rate is withheld |
 
 ---
 
 ## Confidence Scoring
 
-Each rate receives a confidence score (0-100) based on multiple factors:
-
-### Scoring Factors
+Each rate receives a confidence score (0-100):
 
 | Factor | Weight | Description |
 |--------|--------|-------------|
-| **Source Agreement** | 30% | How closely sources agree |
-| **Source Count** | 20% | Number of active sources |
-| **Data Freshness** | 20% | Age of source data |
-| **Historical Consistency** | 15% | Deviation from recent trend |
-| **Source Quality** | 15% | Weighted by source tier |
+| **Source Quality** | 40% | Tier and reliability of the contributing sources |
+| **Source Agreement** | 30% | Dispersion of the included quotes |
+| **Historical Consistency** | 20% | Deviation from the recent moving average |
+| **Data Freshness** | 10% | Age of the quotes at aggregation time |
+
+The score is computed by AFXO. Freshness depends on the time of computation, so the score is an indicator, not something a third party can reproduce exactly. The rate itself is reproducible (see below).
 
 ### Confidence Bands
 
 | Score | Band | Interpretation |
 |-------|------|----------------|
-| 85-100 | **High** | Settlement-grade reliability |
+| 85-100 | **High** | Sources agree closely and are fresh |
 | 70-84 | **Medium** | Suitable for most applications |
-| 50-69 | **Low** | Limited sources, use with caution |
+| 50-69 | **Low** | Use with caution |
 | <50 | **Critical** | Insufficient data quality |
 
 ### Minimum Threshold
@@ -123,37 +104,41 @@ Rates with confidence below 70% are not published on-chain by default. This thre
 
 ---
 
-## Decentralized Verification
+## Signing and Verification
 
-### Operator Network
+### Who signs
 
-AFXO uses multiple independent operators to verify rates:
+Rates are signed by **one AFXO key** (EIP-712, domain `AFXO Oracle` version `2`). The current signer address is published in the [quick start](./quick-start-signed-feeds.md). There is no multi-operator consensus today: a multi-operator verification network is designed and not deployed. AFXO has not yet had an external review.
 
-1. **Independent Fetching**: Each operator fetches data independently
-2. **Independent Validation**: Each operator runs their own ML validation
-3. **Consensus Required**: Minimum 2-of-3 operator agreement
-4. **Divergence Detection**: Alerts if operators disagree significantly
+### How to check a rate without trusting AFXO's arithmetic
 
-### Consensus Process
+The `aggregationHash` inside every signed rate commits to each quote considered, its weight, whether it was included, and when it was observed:
 
 ```
-Operator 1 → Rate A, Confidence X
-Operator 2 → Rate B, Confidence Y
-Operator 3 → Rate C, Confidence Z
+afxo-aggregation-v2
+<BASE>/<QUOTE>
+weighted_median
+<aggregation time, unix ms>
+<sourceId>|<quote x 10^18>|<weight x 10^6>|<1 included, 0 excluded>|<quote time, unix ms>   (one line per source, ordered by sourceId)
 
-If |A - B| < threshold AND |B - C| < threshold:
-    Final Rate = Median(A, B, C)
-    Publish to chain
-Else:
-    Flag divergence, investigate
+aggregationHash = keccak256(the text above)
 ```
 
-### Benefits
+A participant or supervisor with an audit key calls `GET /audit/{currency}?hash=<aggregationHash>` and receives the stored inputs, that text, and an EIP-712 signature over the record. They can then:
 
-- No single point of failure
-- Resistant to data source manipulation
-- Transparent and auditable
-- Geographically distributed
+1. confirm the signature recovers to the published signer;
+2. confirm `keccak256(text)` equals the `aggregationHash` inside the signed rate they already hold;
+3. recompute the weighted median from the included lines and compare it with the rate;
+4. compare any quote with the named provider directly.
+
+A ready-made script that performs steps 1 to 3 and lists the quotes for step 4 is in [`examples/javascript/verify-rate.js`](../examples/javascript/verify-rate.js).
+
+Records are retained for seven years.
+
+### What this does not prove
+
+- That a recorded quote was truly received from the provider: providers do not sign their responses. Step 4 is the check.
+- That the inputs were fixed before the rate was chosen: nothing outside AFXO timestamps the commitment yet.
 
 ---
 
@@ -191,22 +176,14 @@ Else:
 |------------|-------------|
 | **Rate Bounds** | Maximum per-update change limit (e.g., 10%) |
 | **Confidence Threshold** | Minimum 70% confidence required |
-| **Multi-sig Updates** | No single key can push updates |
+| **Role-separated keys** | Signing, on-chain updating and contract administration use different keys; contract administration is held by a multisig and timelock |
 | **Pausable** | Emergency circuit breaker |
 
 ---
 
 ## Audit Trail
 
-Every rate published includes:
-
-- Source rates and weights used
-- Anomaly detection results
-- Confidence score breakdown
-- Operator signatures
-- Transaction hash
-
-This data is stored off-chain and available via API for full reproducibility.
+For every published rate AFXO stores: each source quote with its weight, observation time and inclusion flag; the reason for any exclusion; the statistics and confidence factors; both the weighted median and the weighted average; and the aggregation hash. Access is through the audit endpoint described above, to holders of an audit key.
 
 ---
 

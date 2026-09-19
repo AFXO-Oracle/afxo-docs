@@ -4,7 +4,7 @@
 [![Docs](https://img.shields.io/badge/Docs-Documentation-blue)](https://afxo.ai/docs)
 [![Network](https://img.shields.io/badge/Network-Avalanche-E84142)](https://afxo.ai/network)
 
-**The only institutional-grade FX oracle with deep emerging market coverage and economic intelligence.** Multi-source aggregation, AI quality control, and on-chain delivery for DeFi protocols and financial institutions.
+**The only institutional-grade FX oracle with deep emerging market coverage and economic intelligence.** Multi-source aggregation, statistical quality control, verifiable inputs, and on-chain delivery for DeFi protocols and financial institutions.
 
 ## Overview
 
@@ -12,11 +12,11 @@ AFXO provides reliable, verifiable FX rates for **50+ currencies** that existing
 
 ### Key Features
 
-- **Multi-Source Aggregation** — Rates aggregated from 10+ institutional data sources per currency
-- **AI Quality Control** — ML-powered anomaly detection and confidence scoring
+- **Multi-Source Aggregation** — Each rate is the weighted median of several independent sources (five for fiat pairs today), never fewer than three
+- **Quality Control** — Statistical outlier exclusion, a deviation circuit breaker, and a confidence score on every rate
 - **On-Chain Delivery** — Avalanche C-Chain as canonical root, expanding to Celo, Base, Arbitrum, Solana
 - **Industry-Standard Interface** — Drop-in compatible with existing DeFi protocols
-- **Decentralized Verification** — Multi-operator consensus before any rate is published
+- **Verifiable Inputs** — Every signed rate commits to the exact quotes behind it; holders of an audit key can retrieve them and recompute the rate ([methodology](./docs/methodology.md))
 
 ## Supported Currencies (50+ Live)
 
